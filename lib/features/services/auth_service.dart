@@ -13,7 +13,7 @@ class AuthService {
   // Stream untuk memantau status login (Logout/Login) realtime
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Sign Up
+  // SIGN UP
   Future<User?> signUp({
     required String email,
     required String password,
@@ -25,7 +25,7 @@ class AuthService {
         email: email,
         password: password,
       );
-      
+
       User? user = result.user;
 
       if (user != null) {
@@ -39,16 +39,17 @@ class AuthService {
 
         await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
       }
-      
+
       return user;
     } catch (e) {
       debugPrint("Error Register: $e");
-      rethrow; 
+      rethrow;
     }
   }
 
-  // Sign In
-  Future<User?> signIn({required String email, required String password}) async {
+  // SIGN IN
+  Future<User?> signIn(
+      {required String email, required String password}) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -61,8 +62,18 @@ class AuthService {
     }
   }
 
-  // --- LOGOUT ---
+  // LOGOUT
   Future<void> signOut() async {
     await _auth.signOut();
+  }
+
+  // RESET PASSWORD
+  Future<void> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      debugPrint("Error Reset Password: $e");
+      rethrow;
+    }
   }
 }

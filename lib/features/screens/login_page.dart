@@ -25,6 +25,16 @@ class _LoginPageState extends State<LoginPage> {
       ).showSnackBar(SnackBar(content: Text('Email dan Password harus diisi')));
       return;
     }
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(_emailController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.orange,
+          content: Text('Format email tidak valid'),
+        ),
+      );
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -200,12 +210,48 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                      // FORGOT PASSWORD
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {
-                            // TODO: Tambahkan fitur reset password nanti
+                          onPressed: () async {
+                            if (_emailController.text.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Masukkan email Anda terlebih dahulu untuk reset password',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+
+                            try {
+                              await AuthService().resetPassword(
+                                _emailController.text.trim(),
+                              );
+
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text(
+                                      'Link reset password telah dikirim ke email Anda!',
+                                    ),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content: Text(
+                                      'Gagal mengirim link reset password. Pastikan email terdaftar.',
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
                           },
                           child: Text(
                             "Forgot Password?",
