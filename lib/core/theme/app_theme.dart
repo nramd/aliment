@@ -8,7 +8,7 @@ class AppTheme {
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.normal),
     scaffoldBackgroundColor: AppColors.light,
-    
+
     // Atur tema untuk AppBar secara global
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.light,
@@ -20,10 +20,8 @@ class AppTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.normal,
-        foregroundColor: AppColors.light_active,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        foregroundColor: AppColors.lightActive,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       ),
     ),

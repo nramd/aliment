@@ -108,16 +108,15 @@ class GetStarted extends StatelessWidget {
             ),
             SizedBox(height: 15),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-              ), 
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: SizedBox(
-                width: double
-                    .infinity,
+                width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {context.push('/loginPage');},
+                  onPressed: () {
+                    context.push('/loginPage');
+                  },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.dark_active,
+                    backgroundColor: AppColors.darkActive,
                     padding: EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
