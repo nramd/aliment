@@ -7,11 +7,23 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Mendapatkan User yang sedang login saat ini
   User? get currentUser => _auth.currentUser;
 
   // Stream untuk memantau status login (Logout/Login) realtime
   Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  Future<UserModel?> getUserData(String uid) async {
+    try {
+      DocumentSnapshot doc = await _firestore. collection('users').doc(uid).get();
+      if (doc.exists) {
+        return UserModel. fromFirestore(doc);
+      }
+      return null;
+    } catch (e) {
+      debugPrint("Error getting user data: $e");
+      return null;
+    }
+  }
 
   // SIGN UP
   Future<User?> signUp({
@@ -22,18 +34,21 @@ class AuthService {
   }) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email,
+        email:  email,
         password: password,
       );
 
       User? user = result.user;
 
       if (user != null) {
+        await user.updateDisplayName(name);
+        await user.reload();
+
         UserModel newUser = UserModel(
           uid: user.uid,
           email: email,
           displayName: name,
-          username: username,
+          username:  username,
           createdAt: DateTime.now(),
         );
 
@@ -48,10 +63,9 @@ class AuthService {
   }
 
   // SIGN IN
-  Future<User?> signIn(
-      {required String email, required String password}) async {
+  Future<User?> signIn({required String email, required String password}) async {
     try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
+      UserCredential result = await _auth. signInWithEmailAndPassword(
         email: email,
         password: password,
       );

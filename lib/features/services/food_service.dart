@@ -3,62 +3,80 @@ import '../models/food_item_model.dart';
 import 'package:flutter/foundation.dart';
 
 class FoodService {
-  // 1. Referensi ke koleksi 'food_items' di database Firestore
   final CollectionReference _foodCollection =
       FirebaseFirestore.instance.collection('food_items');
 
-  // --- CREATE: Menambah Makanan Baru ---
+  // --- CREATE:  Menambah Makanan Baru ---
   Future<void> addFoodItem(FoodItemModel item) async {
     try {
-      // Kita menggunakan .add() agar Firestore membuatkan ID unik otomatis
       await _foodCollection.add(item.toMap());
     } catch (e) {
-      debugPrint("Error adding food: $e");
+      debugPrint("Error adding food:  $e");
       rethrow;
     }
   }
 
   // --- READ: Mengambil Data Etalase (Realtime) ---
-  // Fungsi ini mengembalikan 'Stream'. Artinya jika ada perubahan di database,
-  // tampilan di aplikasi akan otomatis berubah tanpa perlu refresh/tarik layar.
   Stream<List<FoodItemModel>> getFoodItems(String userId) {
     return _foodCollection
-        .where('userId', isEqualTo: userId) // Hanya ambil punya user yang login
-        .where('status', isEqualTo: 'available') // Hanya ambil yang masih ada (belum dimakan/dibuang)
-        .orderBy('expiryDate', descending: false) // Urutkan dari yang paling cepat kadaluarsa
-        .snapshots() // Ini yang bikin realtime
+        .where('userId', isEqualTo: userId)
+        .where('status', isEqualTo: 'available')
+        .orderBy('expiryDate', descending: false)
+        .snapshots()
         .map((snapshot) {
-      // Mengubah format aneh Firestore menjadi List<FoodItemModel> yang rapi
       return snapshot.docs.map((doc) {
         return FoodItemModel.fromFirestore(doc);
       }).toList();
     });
   }
 
-  // --- UPDATE: Mengupdate Status (Misal: Dimasak atau Dibuang) ---
+  // --- READ: Mengambil Data Food by ID (Realtime) ---
+  Stream<FoodItemModel?> getFoodById(String foodId) {
+    return _foodCollection. doc(foodId).snapshots().map((doc) {
+      if (doc.exists) {
+        return FoodItemModel.fromFirestore(doc);
+      }
+      return null;
+    });
+  }
+
+  // --- READ: Mengambil Data Food by ID (Single) ---
+  Future<FoodItemModel?> getFoodByIdOnce(String foodId) async {
+    try {
+      DocumentSnapshot doc = await _foodCollection. doc(foodId).get();
+      if (doc.exists) {
+        return FoodItemModel. fromFirestore(doc);
+      }
+      return null;
+    } catch (e) {
+      debugPrint("Error getting food:  $e");
+      return null;
+    }
+  }
+
+  // --- UPDATE: Mengupdate Status ---
   Future<void> updateFoodStatus(String foodId, String newStatus) async {
     try {
-      await _foodCollection.doc(foodId).update({
-        'status': newStatus, 
-        // Kita bisa tambah field lain kalau mau, misal 'consumedAt': Timestamp.now()
+      await _foodCollection. doc(foodId).update({
+        'status': newStatus,
       });
     } catch (e) {
       debugPrint("Error updating status: $e");
       rethrow;
     }
   }
-  
-  // --- UPDATE: Edit Data Makanan (Misal salah input nama/jumlah) ---
-  Future<void> updateFoodItem(String foodId, Map<String, dynamic> data) async {
+
+  // --- UPDATE: Mengupdate Food Item ---
+  Future<void> updateFoodItem(String foodId, FoodItemModel item) async {
     try {
-      await _foodCollection.doc(foodId).update(data);
+      await _foodCollection.doc(foodId).update(item.toMap());
     } catch (e) {
       debugPrint("Error updating food: $e");
       rethrow;
     }
   }
 
-  // --- DELETE: Menghapus Data Selamanya ---
+  // --- DELETE: Menghapus Food Item ---
   Future<void> deleteFoodItem(String foodId) async {
     try {
       await _foodCollection.doc(foodId).delete();
