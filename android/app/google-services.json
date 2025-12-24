@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1045831640194",
+    "project_id": "aliment-app",
+    "storage_bucket": "aliment-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1045831640194:android:05b47a3886c1e3575ac09b",
+        "android_client_info": {
+          "package_name": "com.example.aliment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbQQynV12tqni2071gzpWqu56KLK023H8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
