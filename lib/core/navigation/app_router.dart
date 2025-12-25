@@ -11,7 +11,9 @@ import 'package:aliment/features/screens/add_food_page.dart';
 import 'package:aliment/features/screens/preview_food_page.dart';
 import 'package:aliment/features/screens/food_detail_page.dart';
 import 'package:aliment/features/screens/edit_food_page.dart';
+import 'package:aliment/features/screens/notification_settings_page.dart';
 import 'package:aliment/features/models/food_item_model.dart';
+import 'package:aliment/features/screens/notification_list_page.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/splash',
@@ -41,7 +43,7 @@ final GoRouter router = GoRouter(
 
     // Login Page
     GoRoute(
-      path:  '/loginPage',
+      path: '/loginPage',
       pageBuilder: (context, state) {
         return CustomTransitionPage(
           key: state.pageKey,
@@ -49,7 +51,7 @@ final GoRouter router = GoRouter(
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
-          transitionDuration: const Duration(milliseconds:  400),
+          transitionDuration: const Duration(milliseconds: 400),
         );
       },
     ),
@@ -57,26 +59,26 @@ final GoRouter router = GoRouter(
     // Sign Up Page
     GoRoute(
       path: '/SignUpPage',
-      pageBuilder:  (context, state) {
+      pageBuilder: (context, state) {
         return CustomTransitionPage(
           key: state.pageKey,
           child: const SignUpPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(opacity: animation, child:  child);
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: const Duration(milliseconds: 400),
         );
       },
     ),
 
-    // Home
+    // Home (Main Screen with Bottom Navigation)
     GoRoute(
       path: '/home',
       pageBuilder: (context, state) {
         return CustomTransitionPage(
           key: state.pageKey,
           child: const MainScreen(),
-          transitionsBuilder:  (context, animation, secondaryAnimation, child) {
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: const Duration(milliseconds: 300),
@@ -93,17 +95,17 @@ final GoRouter router = GoRouter(
           child: const EtalasePage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
-              position:  Tween<Offset>(
+              position: Tween<Offset>(
                 begin: const Offset(1.0, 0.0),
                 end: Offset.zero,
               ).animate(CurvedAnimation(
-                parent:  animation,
+                parent: animation,
                 curve: Curves.easeOutCubic,
               )),
               child: child,
             );
           },
-          transitionDuration: const Duration(milliseconds:  300),
+          transitionDuration: const Duration(milliseconds: 300),
         );
       },
     ),
@@ -113,16 +115,16 @@ final GoRouter router = GoRouter(
       path: '/addFood',
       pageBuilder: (context, state) {
         return CustomTransitionPage(
-          key: state. pageKey,
+          key: state.pageKey,
           child: const AddFoodPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
-              position:  Tween<Offset>(
+              position: Tween<Offset>(
                 begin: const Offset(1.0, 0.0),
                 end: Offset.zero,
               ).animate(CurvedAnimation(
                 parent: animation,
-                curve: Curves. easeOutCubic,
+                curve: Curves.easeOutCubic,
               )),
               child: child,
             );
@@ -144,7 +146,7 @@ final GoRouter router = GoRouter(
           child: PreviewFoodPage(food: food, imageFile: imageFile),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
-              position:  Tween<Offset>(
+              position: Tween<Offset>(
                 begin: const Offset(1.0, 0.0),
                 end: Offset.zero,
               ).animate(CurvedAnimation(
@@ -165,16 +167,16 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) {
         final foodId = state.pathParameters['id']!;
         return CustomTransitionPage(
-          key: state. pageKey,
+          key: state.pageKey,
           child: FoodDetailPage(foodId: foodId),
-          transitionsBuilder:  (context, animation, secondaryAnimation, child) {
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
-              position:  Tween<Offset>(
+              position: Tween<Offset>(
                 begin: const Offset(1.0, 0.0),
                 end: Offset.zero,
               ).animate(CurvedAnimation(
                 parent: animation,
-                curve: Curves. easeOutCubic,
+                curve: Curves.easeOutCubic,
               )),
               child: child,
             );
@@ -190,16 +192,62 @@ final GoRouter router = GoRouter(
       pageBuilder: (context, state) {
         final foodId = state.pathParameters['id']!;
         return CustomTransitionPage(
-          key: state. pageKey,
+          key: state.pageKey,
           child: EditFoodPage(foodId: foodId),
-          transitionsBuilder:  (context, animation, secondaryAnimation, child) {
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
-              position:  Tween<Offset>(
+              position: Tween<Offset>(
                 begin: const Offset(1.0, 0.0),
                 end: Offset.zero,
               ).animate(CurvedAnimation(
                 parent: animation,
-                curve: Curves. easeOutCubic,
+                curve: Curves.easeOutCubic,
+              )),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
+      },
+    ),
+
+    // Notification Settings Page - BARU
+    GoRoute(
+      path: '/notificationSettings',
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: const NotificationSettingsPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              )),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/notifications',
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: const NotificationListPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
               )),
               child: child,
             );
@@ -215,7 +263,7 @@ class NoTransitionPage<T> extends CustomTransitionPage<T> {
   const NoTransitionPage({required super.child})
       : super(
           transitionsBuilder: _transitionsBuilder,
-          transitionDuration:  Duration.zero,
+          transitionDuration: Duration.zero,
         );
 
   static Widget _transitionsBuilder(

@@ -4,6 +4,7 @@ import 'package:aliment/core/theme/app_colors.dart';
 import 'package:aliment/features/services/auth_service.dart';
 import 'package:aliment/features/services/food_service.dart';
 import 'package:aliment/features/models/food_item_model.dart';
+import 'package:aliment/features/services/notification_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,7 +13,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   final AuthService _authService = AuthService();
   final FoodService _foodService = FoodService();
 
@@ -27,6 +29,14 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     super.initState();
     _loadUserData();
     _initFoodStream();
+    _checkAndScheduleNotifications();
+  }
+
+  Future<void> _checkAndScheduleNotifications() async {
+    final user = _authService.currentUser;
+    if (user != null) {
+      await NotificationService().checkAndScheduleExpiryNotifications(user.uid);
+    }
   }
 
   void _initFoodStream() {
@@ -42,11 +52,13 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       final userData = await _authService.getUserData(user.uid);
       if (userData != null && mounted) {
         setState(() {
-          _displayName = userData. displayName;
+          _displayName = userData.displayName;
         });
-      } else if (user.displayName != null && user.displayName!.isNotEmpty && mounted) {
+      } else if (user.displayName != null &&
+          user.displayName!.isNotEmpty &&
+          mounted) {
         setState(() {
-          _displayName = user. displayName!;
+          _displayName = user.displayName!;
         });
       }
     }
@@ -55,7 +67,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    
+
     final user = _authService.currentUser;
 
     if (user == null) {
@@ -67,14 +79,14 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(), // Mengurangi bounce effect
-          child:  Padding(
+          child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(),
                 const SizedBox(height: 24),
-                _buildEtalaseSection(user. uid),
+                _buildEtalaseSection(user.uid),
                 const SizedBox(height: 24),
                 _buildJelajahiSection(),
                 const SizedBox(height: 24),
@@ -93,7 +105,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       children: [
         CircleAvatar(
           radius: 25,
-          backgroundColor: AppColors. normal,
+          backgroundColor: AppColors.normal,
           child: Text(
             _displayName.isNotEmpty ? _displayName[0].toUpperCase() : 'U',
             style: const TextStyle(
@@ -131,7 +143,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           children: [
             _buildIconButton(Icons.shopping_cart_outlined, () {}),
             _buildIconButton(Icons.chat_bubble_outline, () {}),
-            _buildIconButton(Icons.notifications_outlined, () {}),
+            _buildNotificationButton(),
           ],
         ),
       ],
@@ -143,9 +155,67 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Icon(icon, color: AppColors.darker, size: 24),
+        padding: const EdgeInsets.all(6.0),
+        child: Icon(icon, color: AppColors.darker, size: 16),
       ),
+    );
+  }
+
+  Widget _buildNotificationButton() {
+    return StreamBuilder<List<FoodItemModel>>(
+      stream: _foodStream,
+      builder: (context, snapshot) {
+        final foods = snapshot.data ?? [];
+        final expiringCount = foods
+            .where((f) => f.daysUntilExpiry <= 3 && f.daysUntilExpiry >= 0)
+            .length;
+        final expiredCount = foods.where((f) => f.daysUntilExpiry < 0).length;
+        final totalAlerts = expiringCount + expiredCount;
+
+        return InkWell(
+          onTap: () => context.push('/notifications'),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Stack(
+              children: [
+                Icon(
+                  totalAlerts > 0
+                      ? Icons.notifications_active
+                      : Icons.notifications_outlined,
+                  color: totalAlerts > 0 ? Colors.orange : AppColors.darker,
+                  size: 24,
+                ),
+                if (totalAlerts > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        totalAlerts > 9 ? '9+' : '$totalAlerts',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -157,8 +227,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
           'Etalase Bahan Makanan',
           style: TextStyle(
             fontFamily: 'Gabarito',
-            fontSize: 18,
-            fontWeight: FontWeight. bold,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
             color: AppColors.darker,
           ),
         ),
@@ -166,9 +236,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.normal,
             borderRadius: BorderRadius.circular(16),
-            boxShadow:  [
+            boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
                 blurRadius: 10,
@@ -180,7 +250,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             stream: _foodStream,
             builder: (context, snapshot) {
               // Tampilkan loading hanya saat pertama kali
-              if (snapshot.connectionState == ConnectionState.waiting && ! snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.waiting &&
+                  !snapshot.hasData) {
                 return const SizedBox(
                   height: 150,
                   child: Center(child: CircularProgressIndicator()),
@@ -189,8 +260,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
 
               if (snapshot.hasError) {
                 return SizedBox(
-                  height:  150,
-                  child:  Center(child: Text('Error: ${snapshot. error}')),
+                  height: 150,
+                  child: Center(child: Text('Error: ${snapshot.error}')),
                 );
               }
 
@@ -200,9 +271,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (displayFoods. isEmpty)
+                  if (displayFoods.isEmpty)
                     const SizedBox(
-                      height:  80,
+                      height: 80,
                       child: Center(
                         child: Text(
                           'Belum ada bahan makanan',
@@ -211,11 +282,10 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                       ),
                     )
                   else
-                    ... displayFoods.map((food) => _buildFoodItem(food)),
-                  const SizedBox(height: 12),
+                    ...displayFoods.map((food) => _buildFoodItem(food)),
                   _buildAddFoodButton(),
                   const SizedBox(height: 12),
-                  _buildLihatSemuaButton(foods. length),
+                  _buildLihatSemuaButton(foods.length),
                 ],
               );
             },
@@ -226,7 +296,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   }
 
   Widget _buildFoodItem(FoodItemModel food) {
-    final Color statusColor = food. daysUntilExpiry <= 3 ? Colors.red : AppColors.normal;
+    final Color statusColor =
+        food.daysUntilExpiry <= 3 ? Colors.red : AppColors.normal;
     final String expiryText = food.daysUntilExpiry < 0
         ? 'Kadaluarsa'
         : food.daysUntilExpiry == 0
@@ -235,11 +306,11 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         color: AppColors.light,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.normal. withOpacity(0.3)),
+        border: Border.all(color: AppColors.normal.withOpacity(0.3)),
       ),
       child: Row(
         children: [
@@ -265,7 +336,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                           if (loadingProgress == null) return child;
                           return Center(
                             child: SizedBox(
-                              width:  20,
+                              width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
@@ -348,7 +419,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors. light,
+          color: AppColors.light,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.normal.withOpacity(0.3)),
         ),
@@ -361,9 +432,9 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                 color: AppColors.normal,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child:  const Icon(Icons.add, color: Colors.white),
+              child: const Icon(Icons.add, color: Colors.white),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             const Text(
               'Tambahkan Bahan Makanan',
               style: TextStyle(
@@ -379,21 +450,21 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   }
 
   Widget _buildLihatSemuaButton(int totalItems) {
-    return SizedBox(
-      width: double.infinity,
+    return Center(
       child: ElevatedButton(
         onPressed: () => context.push('/etalase'),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.darkActive,
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          // Tambahkan padding horizontal (kiri-kanan) agar tombol tidak terlalu sempit
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         child: Text(
           'Lihat Semua ($totalItems)',
           style: const TextStyle(
-            fontFamily:  'Gabarito',
+            fontFamily: 'Gabarito',
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -405,21 +476,21 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   Widget _buildJelajahiSection() {
     final List<Map<String, String>> nearbyFoods = [
       {'name': 'Pisang Ambon', 'distance': '0.06 Km', 'image': 'banana'},
-      {'name': 'Jus Alpukat', 'distance': '0.11 Km', 'image':  'avocado'},
-      {'name': 'Omelette Telur', 'distance': '0.17 Km', 'image':  'egg'},
-      {'name': 'Nasi Goreng', 'distance': '0.26 Km', 'image':  'rice'},
+      {'name': 'Jus Alpukat', 'distance': '0.11 Km', 'image': 'avocado'},
+      {'name': 'Omelette Telur', 'distance': '0.17 Km', 'image': 'egg'},
+      {'name': 'Nasi Goreng', 'distance': '0.26 Km', 'image': 'rice'},
     ];
 
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children:  [
+          children: [
             const Text(
               'Jelajahi makanan di sekitarmu',
               style: TextStyle(
                 fontFamily: 'Gabarito',
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: AppColors.darker,
               ),
@@ -430,27 +501,41 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                 'Lihat Semua',
                 style: TextStyle(
                   color: AppColors.normal,
+                  decoration: TextDecoration.underline,
                   fontFamily: 'Gabarito',
+                  fontSize: 12,
                 ),
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 180,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            physics: const ClampingScrollPhysics(),
-            itemCount: nearbyFoods.length,
-            itemBuilder: (context, index) {
-              final food = nearbyFoods[index];
-              return _buildNearbyFoodCard(
-                food['name']!,
-                food['distance']!,
-                food['image']!,
-              );
-            },
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(4, 4),
+              ),
+            ],
+          ),
+          child: SizedBox(
+            height: 180,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              physics: const ClampingScrollPhysics(),
+              itemCount: nearbyFoods.length,
+              itemBuilder: (context, index) {
+                final food = nearbyFoods[index];
+                return _buildNearbyFoodCard(
+                  food['name']!,
+                  food['distance']!,
+                  food['image']!,
+                );
+              },
+            ),
           ),
         ),
       ],
@@ -464,17 +549,17 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     switch (imageKey) {
       case 'banana':
         icon = Icons.eco;
-        bgColor = Colors.yellow. shade100;
+        bgColor = Colors.yellow.shade100;
         break;
-      case 'avocado': 
+      case 'avocado':
         icon = Icons.local_drink;
-        bgColor = Colors. green.shade100;
+        bgColor = Colors.green.shade100;
         break;
-      case 'egg': 
+      case 'egg':
         icon = Icons.egg;
         bgColor = Colors.orange.shade100;
         break;
-      case 'rice': 
+      case 'rice':
         icon = Icons.rice_bowl;
         bgColor = Colors.brown.shade100;
         break;
@@ -505,7 +590,8 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
             width: double.infinity,
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(12)),
             ),
             child: Icon(icon, size: 50, color: AppColors.normal),
           ),
@@ -516,7 +602,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
               children: [
                 Text(
                   name,
-                  style:  const TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Gabarito',
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
@@ -531,7 +617,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                     const SizedBox(width: 2),
                     Text(
                       distance,
-                      style:  TextStyle(color: Colors.grey[600], fontSize: 11),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 11),
                     ),
                   ],
                 ),
@@ -547,7 +633,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors. normal. withOpacity(0.15),
+        color: AppColors.normal,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -562,28 +648,32 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
                     fontFamily: 'Gabarito',
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.darker,
+                    color: AppColors.light,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Pelajari cara mengurangi limbah makanan dengan tips dan resep praktis',
-                  style: TextStyle(fontSize: 12, color: Colors. grey[700]),
+                  style: TextStyle(fontSize: 12, color: AppColors.light),
                 ),
                 const SizedBox(height: 12),
-                OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors. normal),
+                ElevatedButton(
+                  onPressed: () {
+                    // context.push('/edukasi');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.light,
+                    foregroundColor: AppColors.normal,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(12),
                     ),
+                    elevation: 0,
                   ),
                   child: const Text(
                     'Lihat Selengkapnya',
                     style: TextStyle(
                       fontFamily: 'Gabarito',
-                      color: AppColors.darker,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -606,7 +696,7 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   }
 
   IconData _getCategoryIcon(String category) {
-    switch (category. toLowerCase()) {
+    switch (category.toLowerCase()) {
       case 'daging':
       case 'protein':
         return Icons.kebab_dining;

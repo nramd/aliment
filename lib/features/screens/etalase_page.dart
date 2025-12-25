@@ -6,7 +6,7 @@ import 'package:aliment/features/services/food_service.dart';
 import 'package:aliment/features/models/food_item_model.dart';
 
 class EtalasePage extends StatefulWidget {
-  const EtalasePage({super. key});
+  const EtalasePage({super.key});
 
   @override
   State<EtalasePage> createState() => _EtalasePageState();
@@ -61,7 +61,7 @@ class _EtalasePageState extends State<EtalasePage> {
     super.initState();
     _searchController.addListener(() {
       setState(() {
-        _searchQuery = _searchController. text;
+        _searchQuery = _searchController.text;
       });
     });
   }
@@ -104,7 +104,8 @@ class _EtalasePageState extends State<EtalasePage> {
 
     // 2. Filter by Category
     if (_selectedCategory != 'Semua') {
-      result = result. where((food) => food.category == _selectedCategory).toList();
+      result =
+          result.where((food) => food.category == _selectedCategory).toList();
     }
 
     // 3. Filter by Expiry Status
@@ -112,12 +113,12 @@ class _EtalasePageState extends State<EtalasePage> {
       result = result.where((food) {
         switch (_selectedExpiryFilter) {
           case 'Aman':
-            return food. daysUntilExpiry > 3;
+            return food.daysUntilExpiry > 3;
           case 'Segera Olah':
             return food.daysUntilExpiry >= 0 && food.daysUntilExpiry <= 3;
           case 'Kadaluarsa':
             return food.daysUntilExpiry < 0;
-          default: 
+          default:
             return true;
         }
       }).toList();
@@ -128,19 +129,21 @@ class _EtalasePageState extends State<EtalasePage> {
       case 'Kadaluarsa Terdekat':
         result.sort((a, b) => a.expiryDate.compareTo(b.expiryDate));
         break;
-      case 'Kadaluarsa Terjauh': 
+      case 'Kadaluarsa Terjauh':
         result.sort((a, b) => b.expiryDate.compareTo(a.expiryDate));
         break;
       case 'Nama A-Z':
-        result.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        result.sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         break;
       case 'Nama Z-A':
-        result.sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+        result.sort(
+            (a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
         break;
       case 'Terbaru Ditambahkan':
-        result.sort((a, b) => b.addedDate.compareTo(a. addedDate));
+        result.sort((a, b) => b.addedDate.compareTo(a.addedDate));
         break;
-      case 'Terlama Ditambahkan': 
+      case 'Terlama Ditambahkan':
         result.sort((a, b) => a.addedDate.compareTo(b.addedDate));
         break;
     }
@@ -181,7 +184,7 @@ class _EtalasePageState extends State<EtalasePage> {
             // Search Bar
             _buildSearchBar(),
 
-            const SizedBox(height:  12),
+            const SizedBox(height: 12),
 
             // Quick Filter Chips (Expiry Status)
             _buildQuickFilterChips(),
@@ -207,7 +210,7 @@ class _EtalasePageState extends State<EtalasePage> {
                     return Center(child: Text("Error: ${snapshot.error}"));
                   }
 
-                  final allFoods = snapshot.data ??  [];
+                  final allFoods = snapshot.data ?? [];
                   final filteredFoods = _filterAndSortFoods(allFoods);
 
                   // Stats untuk header
@@ -216,16 +219,18 @@ class _EtalasePageState extends State<EtalasePage> {
                   return Column(
                     children: [
                       // Stats Bar
-                      _buildStatsBar(stats, allFoods.length, filteredFoods.length),
+                      _buildStatsBar(
+                          stats, allFoods.length, filteredFoods.length),
 
                       // List
                       Expanded(
                         child: filteredFoods.isEmpty
                             ? _buildEmptyState(allFoods.isEmpty)
                             : ListView.builder(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
-                                itemCount: filteredFoods. length,
-                                itemBuilder:  (context, index) {
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                itemCount: filteredFoods.length,
+                                itemBuilder: (context, index) {
                                   final food = filteredFoods[index];
                                   return _buildFoodCard(food);
                                 },
@@ -256,7 +261,7 @@ class _EtalasePageState extends State<EtalasePage> {
                 const Text(
                   'Kembali',
                   style: TextStyle(
-                    fontFamily:  'Gabarito',
+                    fontFamily: 'Gabarito',
                     color: AppColors.darker,
                   ),
                 ),
@@ -273,20 +278,20 @@ class _EtalasePageState extends State<EtalasePage> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:  [
+        children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Etalase Bahan Makanan',
-                style:  TextStyle(
+                style: TextStyle(
                   fontFamily: 'Gabarito',
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: AppColors.normal,
                 ),
               ),
-              const SizedBox(height:  4),
+              const SizedBox(height: 4),
               Text(
                 'Kelola semua bahan makananmu',
                 style: TextStyle(
@@ -304,7 +309,7 @@ class _EtalasePageState extends State<EtalasePage> {
                 color: AppColors.normal,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child:  const Icon(Icons.add, color: Colors.white, size: 24),
+              child: const Icon(Icons.add, color: Colors.white, size: 24),
             ),
           ),
         ],
@@ -327,26 +332,26 @@ class _EtalasePageState extends State<EtalasePage> {
                 hintText: 'Cari makanan...',
                 prefixIcon: Icon(Icons.search, color: AppColors.normal),
                 suffixIcon: _searchQuery.isNotEmpty
-                    ?  IconButton(
-                        icon:  const Icon(Icons.clear, size: 20),
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 20),
                         onPressed: () {
-                          _searchController. clear();
+                          _searchController.clear();
                         },
                       )
                     : null,
                 filled: true,
-                fillColor:  Colors.white,
+                fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide. none,
+                  borderSide: BorderSide.none,
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius:  BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius. circular(12),
+                  borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: AppColors.normal, width: 2),
                 ),
               ),
@@ -368,7 +373,9 @@ class _EtalasePageState extends State<EtalasePage> {
                 color: _showFilters ? AppColors.normal : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: _showFilters ? AppColors.normal : Colors. grey.withOpacity(0.3),
+                  color: _showFilters
+                      ? AppColors.normal
+                      : Colors.grey.withOpacity(0.3),
                 ),
               ),
               child: Stack(
@@ -384,13 +391,13 @@ class _EtalasePageState extends State<EtalasePage> {
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color:  Colors.red,
+                          color: Colors.red,
                           shape: BoxShape.circle,
                         ),
                         child: Text(
                           '$activeFilters',
                           style: const TextStyle(
-                            color:  Colors.white,
+                            color: Colors.white,
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
@@ -409,17 +416,17 @@ class _EtalasePageState extends State<EtalasePage> {
   Widget _buildQuickFilterChips() {
     return SizedBox(
       height: 40,
-      child: ListView. builder(
-        scrollDirection:  Axis.horizontal,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: _expiryFilters.length,
         itemBuilder: (context, index) {
           final filter = _expiryFilters[index];
           final isSelected = _selectedExpiryFilter == filter;
-          
+
           Color chipColor;
           switch (filter) {
-            case 'Aman': 
+            case 'Aman':
               chipColor = Colors.green;
               break;
             case 'Segera Olah':
@@ -444,14 +451,14 @@ class _EtalasePageState extends State<EtalasePage> {
               },
               backgroundColor: Colors.white,
               selectedColor: chipColor,
-              labelStyle:  TextStyle(
+              labelStyle: TextStyle(
                 color: isSelected ? Colors.white : AppColors.darker,
                 fontFamily: 'Gabarito',
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 fontSize: 13,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius:  BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
                   color: isSelected ? chipColor : Colors.grey.withOpacity(0.3),
                 ),
@@ -466,11 +473,11 @@ class _EtalasePageState extends State<EtalasePage> {
 
   Widget _buildExpandedFilterPanel() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical:  8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius. circular(16),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -485,18 +492,18 @@ class _EtalasePageState extends State<EtalasePage> {
           // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children:  [
+            children: [
               const Text(
                 'Filter & Urutkan',
                 style: TextStyle(
-                  fontFamily:  'Gabarito',
+                  fontFamily: 'Gabarito',
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
               TextButton(
                 onPressed: _resetFilters,
-                child:  Text(
+                child: Text(
                   'Reset',
                   style: TextStyle(
                     color: AppColors.normal,
@@ -518,11 +525,11 @@ class _EtalasePageState extends State<EtalasePage> {
               fontSize: 14,
             ),
           ),
-          const SizedBox(height:  8),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: _categories. map((category) {
+            children: _categories.map((category) {
               final isSelected = _selectedCategory == category;
               return InkWell(
                 onTap: () {
@@ -531,18 +538,21 @@ class _EtalasePageState extends State<EtalasePage> {
                   });
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical:  6),
-                  decoration:  BoxDecoration(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
                     color: isSelected ? AppColors.normal : Colors.transparent,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border. all(
-                      color: isSelected ? AppColors.normal : Colors.grey.withOpacity(0.3),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.normal
+                          : Colors.grey.withOpacity(0.3),
                     ),
                   ),
-                  child:  Text(
+                  child: Text(
                     category,
                     style: TextStyle(
-                      color: isSelected ? Colors.white :  AppColors.darker,
+                      color: isSelected ? Colors.white : AppColors.darker,
                       fontSize: 12,
                       fontFamily: 'Gabarito',
                     ),
@@ -570,7 +580,7 @@ class _EtalasePageState extends State<EtalasePage> {
               border: Border.all(color: Colors.grey.withOpacity(0.3)),
               borderRadius: BorderRadius.circular(12),
             ),
-            child:  DropdownButtonHideUnderline(
+            child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _selectedSort,
                 isExpanded: true,
@@ -579,16 +589,16 @@ class _EtalasePageState extends State<EtalasePage> {
                     value: option,
                     child: Text(
                       option,
-                      style:  const TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Gabarito',
                         fontSize: 14,
                       ),
                     ),
                   );
                 }).toList(),
-                onChanged:  (value) {
+                onChanged: (value) {
                   setState(() {
-                    _selectedSort = value! ;
+                    _selectedSort = value!;
                   });
                 },
               ),
@@ -602,7 +612,7 @@ class _EtalasePageState extends State<EtalasePage> {
   Widget _buildStatsBar(Map<String, int> stats, int total, int filtered) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical:  8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -612,9 +622,7 @@ class _EtalasePageState extends State<EtalasePage> {
         children: [
           // Result Count
           Text(
-            filtered == total
-                ? '$total item'
-                : '$filtered dari $total item',
+            filtered == total ? '$total item' : '$filtered dari $total item',
             style: TextStyle(
               fontFamily: 'Gabarito',
               color: Colors.grey[600],
@@ -623,7 +631,7 @@ class _EtalasePageState extends State<EtalasePage> {
           ),
           // Status indicators
           Row(
-            children:  [
+            children: [
               _buildStatusIndicator(
                   '${stats['expired']}', Colors.red, 'Kadaluarsa'),
               const SizedBox(width: 12),
@@ -672,9 +680,9 @@ class _EtalasePageState extends State<EtalasePage> {
     int safe = 0;
 
     for (var food in foods) {
-      if (food. daysUntilExpiry < 0) {
+      if (food.daysUntilExpiry < 0) {
         expired++;
-      } else if (food. daysUntilExpiry <= 3) {
+      } else if (food.daysUntilExpiry <= 3) {
         warning++;
       } else {
         safe++;
@@ -702,7 +710,7 @@ class _EtalasePageState extends State<EtalasePage> {
               style: TextStyle(
                 fontFamily: 'Gabarito',
                 fontSize: 16,
-                color:  Colors.grey,
+                color: Colors.grey,
               ),
             ),
             const SizedBox(height: 8),
@@ -714,7 +722,7 @@ class _EtalasePageState extends State<EtalasePage> {
               ),
             ),
             const SizedBox(height: 24),
-            ElevatedButton. icon(
+            ElevatedButton.icon(
               onPressed: () => context.push('/addFood'),
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text(
@@ -723,7 +731,8 @@ class _EtalasePageState extends State<EtalasePage> {
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.normal,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
@@ -742,7 +751,7 @@ class _EtalasePageState extends State<EtalasePage> {
               style: TextStyle(
                 fontFamily: 'Gabarito',
                 fontSize: 16,
-                color: Colors. grey,
+                color: Colors.grey,
               ),
             ),
             const SizedBox(height: 8),
@@ -761,7 +770,8 @@ class _EtalasePageState extends State<EtalasePage> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.normal,
                 side: BorderSide(color: AppColors.normal),
-                padding: const EdgeInsets. symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
@@ -773,7 +783,7 @@ class _EtalasePageState extends State<EtalasePage> {
   Widget _buildFoodCard(FoodItemModel food) {
     final Color statusColor = food.daysUntilExpiry < 0
         ? Colors.red
-        :  food.daysUntilExpiry <= 3
+        : food.daysUntilExpiry <= 3
             ? Colors.orange
             : AppColors.normal;
 
@@ -789,7 +799,7 @@ class _EtalasePageState extends State<EtalasePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: food.daysUntilExpiry <= 3
-            ? Border.all(color: statusColor. withOpacity(0.5), width: 1.5)
+            ? Border.all(color: statusColor.withOpacity(0.5), width: 1.5)
             : null,
         boxShadow: [
           BoxShadow(
@@ -805,6 +815,7 @@ class _EtalasePageState extends State<EtalasePage> {
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Food Image/Icon
               Container(
@@ -816,7 +827,7 @@ class _EtalasePageState extends State<EtalasePage> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: food. imageUrl != null && food.imageUrl!.isNotEmpty
+                  child: food.imageUrl != null && food.imageUrl!.isNotEmpty
                       ? Image.network(
                           food.imageUrl!,
                           fit: BoxFit.cover,
@@ -824,9 +835,9 @@ class _EtalasePageState extends State<EtalasePage> {
                             if (loadingProgress == null) return child;
                             return Center(
                               child: SizedBox(
-                                width:  20,
-                                height:  20,
-                                child:  CircularProgressIndicator(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   color: AppColors.normal,
                                 ),
@@ -848,39 +859,51 @@ class _EtalasePageState extends State<EtalasePage> {
                         ),
                 ),
               ),
-              const SizedBox(width:  12),
+              const SizedBox(width: 12),
 
-              // Food Info
+              // Food Info - Expanded untuk mengisi ruang tersedia
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Name & Category
+                    // Nama makanan
+                    Text(
+                      food.name,
+                      style: const TextStyle(
+                        fontFamily: 'Gabarito',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Quantity & Category dalam satu Row
                     Row(
                       children: [
-                        Expanded(
-                          child: Text(
-                            food.name,
-                            style: const TextStyle(
-                              fontFamily: 'Gabarito',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        Text(
+                          '${food.quantity}${food.unit}',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 13,
                           ),
                         ),
+                        const SizedBox(width: 8),
+                        // Category Badge - dipindah ke sini
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: AppColors.normal. withOpacity(0.1),
+                            color: AppColors.normal.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
                             food.category,
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 11,
                               color: AppColors.normal,
                               fontWeight: FontWeight.w500,
                             ),
@@ -888,17 +911,7 @@ class _EtalasePageState extends State<EtalasePage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-
-                    // Quantity
-                    Text(
-                      '${food. quantity}${food.unit}',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 13,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
 
                     // Expiry Info
                     Row(
@@ -910,7 +923,7 @@ class _EtalasePageState extends State<EtalasePage> {
                           size: 14,
                           color: statusColor,
                         ),
-                        const SizedBox(width:  4),
+                        const SizedBox(width: 4),
                         Text(
                           expiryText,
                           style: TextStyle(
@@ -925,32 +938,45 @@ class _EtalasePageState extends State<EtalasePage> {
                 ),
               ),
 
-              // Action Buttons
+              const SizedBox(width: 8),
+
+              // Action Buttons - Fixed width column
               Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Edit Button
                   InkWell(
                     onTap: () => context.push('/editFood/${food.id}'),
+                    borderRadius: BorderRadius.circular(8),
                     child: Container(
-                      padding:  const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.normal. withOpacity(0.1),
+                        color: AppColors.normal.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(Icons.edit_outlined,
-                          color: AppColors.normal, size: 20),
+                      child: Icon(
+                        Icons.edit_outlined,
+                        color: AppColors.normal,
+                        size: 18,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
+                  // Delete Button
                   InkWell(
                     onTap: () => _showDeleteDialog(food),
+                    borderRadius: BorderRadius.circular(8),
                     child: Container(
                       padding: const EdgeInsets.all(8),
-                      decoration:  BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.red.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.delete_outline,
-                          color: Colors. red, size: 20),
+                      child: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.red,
+                        size: 18,
+                      ),
                     ),
                   ),
                 ],
@@ -996,7 +1022,7 @@ class _EtalasePageState extends State<EtalasePage> {
             ),
             child: const Text(
               'Hapus',
-              style: TextStyle(color:  Colors.white),
+              style: TextStyle(color: Colors.white),
             ),
           ),
         ],
@@ -1005,7 +1031,7 @@ class _EtalasePageState extends State<EtalasePage> {
   }
 
   IconData _getCategoryIcon(String category) {
-    switch (category. toLowerCase()) {
+    switch (category.toLowerCase()) {
       case 'daging':
       case 'protein':
         return Icons.kebab_dining;
@@ -1013,7 +1039,7 @@ class _EtalasePageState extends State<EtalasePage> {
         return Icons.eco;
       case 'buah':
         return Icons.apple;
-      case 'minuman': 
+      case 'minuman':
         return Icons.local_drink;
       case 'makanan kaleng':
         return Icons.inventory_2;

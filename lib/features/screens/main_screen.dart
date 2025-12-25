@@ -33,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -47,9 +47,9 @@ class _MainScreenState extends State<MainScreen> {
             });
           },
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: AppColors.normal,
-          unselectedItemColor: Colors.grey,
+          backgroundColor: AppColors.normal,
+          selectedItemColor: AppColors.darker,
+          unselectedItemColor: AppColors.white,
           selectedLabelStyle: const TextStyle(
             fontFamily: 'Gabarito',
             fontWeight: FontWeight.bold,
@@ -57,30 +57,55 @@ class _MainScreenState extends State<MainScreen> {
           unselectedLabelStyle: const TextStyle(
             fontFamily: 'Gabarito',
           ),
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
+          iconSize: 28,
+          selectedFontSize: 14,
+          unselectedFontSize: 14,
+
+          // --- BAGIAN ITEMS DIMODIFIKASI DI SINI ---
+          items: [
+            _buildNavItem(
+              icon: Icons.home_outlined,
+              activeIcon: Icons.home,
               label: 'Beranda',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_outline),
-              activeIcon: Icon(Icons.favorite),
+            _buildNavItem(
+              icon: Icons.favorite_outline,
+              activeIcon: Icons.favorite,
               label: 'Berbagi',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.menu_book_outlined),
-              activeIcon: Icon(Icons.menu_book),
+            _buildNavItem(
+              icon: Icons.menu_book_outlined,
+              activeIcon: Icons.menu_book,
               label: 'Edukasi',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
+            _buildNavItem(
+              icon: Icons.person_outline,
+              activeIcon: Icons.person,
               label: 'Profil',
             ),
           ],
         ),
       ),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem({
+    required IconData icon,
+    required IconData activeIcon,
+    required String label,
+  }) {
+    const double verticalOffset = 8.0;
+
+    return BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.only(top: verticalOffset),
+        child: Icon(icon),
+      ),
+      activeIcon: Padding(
+        padding: const EdgeInsets.only(top: verticalOffset),
+        child: Icon(activeIcon),
+      ),
+      label: label,
     );
   }
 }
