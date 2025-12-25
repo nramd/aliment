@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:aliment/core/theme/app_colors.dart';
 import 'package:aliment/features/services/auth_service.dart';
 import 'package:aliment/features/models/food_item_model.dart';
+import 'package:aliment/features/models/food_template_model.dart';
 
 class AddFoodPage extends StatefulWidget {
   const AddFoodPage({super.key});
@@ -13,15 +14,24 @@ class AddFoodPage extends StatefulWidget {
   State<AddFoodPage> createState() => _AddFoodPageState();
 }
 
-class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStateMixin {
+class _AddFoodPageState extends State<AddFoodPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
 
+  // Controllers untuk Input Manual
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _unitController = TextEditingController();
-  final TextEditingController _expiryDaysController = TextEditingController(text: '7');
+  final TextEditingController _expiryDaysController =
+      TextEditingController(text: '7');
+  String _selectedCategory = 'Lainnya';
+
+  // Untuk Quick Add
+  final TextEditingController _searchController = TextEditingController();
+  String _selectedQuickCategory = 'Semua';
+  List<FoodTemplate> _filteredTemplates = FoodTemplateData.templates;
 
   File? _selectedImage;
   String? _selectedImageName;
@@ -30,6 +40,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
@@ -38,8 +49,36 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
     _nameController.dispose();
     _quantityController.dispose();
     _unitController.dispose();
-    _expiryDaysController. dispose();
+    _expiryDaysController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _filterTemplates();
+  }
+
+  void _filterTemplates() {
+    setState(() {
+      List<FoodTemplate> results = FoodTemplateData.templates;
+
+      // Filter by category
+      if (_selectedQuickCategory != 'Semua') {
+        results =
+            results.where((t) => t.category == _selectedQuickCategory).toList();
+      }
+
+      // Filter by search query
+      if (_searchController.text.isNotEmpty) {
+        results = results
+            .where((t) => t.name
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase()))
+            .toList();
+      }
+
+      _filteredTemplates = results;
+    });
   }
 
   void _handleBack() {
@@ -62,6 +101,29 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
     }
   }
 
+  void _selectTemplate(FoodTemplate template) {
+    // Pindah ke tab Input Manual dan isi form dengan data template
+    _tabController.animateTo(0);
+
+    setState(() {
+      _nameController.text = template.name;
+      _quantityController.text = template.defaultQuantity.toString();
+      _unitController.text = template.defaultUnit;
+      _expiryDaysController.text = template.defaultExpiryDays.toString();
+      _selectedCategory = template.category;
+    });
+
+    // Tampilkan snackbar konfirmasi
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content:
+            Text('${template.name} dipilih!  Silakan sesuaikan jika perlu.'),
+        backgroundColor: AppColors.normal,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   void _navigateToPreview() {
     if (!_formKey.currentState!.validate()) return;
 
@@ -73,13 +135,15 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
     final previewFood = FoodItemModel(
       id: '',
       userId: user.uid,
-      name: _nameController.text. trim(),
-      category: 'Lainnya',
-      expiryDate: DateTime. now().add(Duration(days: expiryDays)),
+      name: _nameController.text.trim(),
+      category: _selectedCategory,
+      expiryDate: DateTime.now().add(Duration(days: expiryDays)),
       addedDate: DateTime.now(),
       storageLocation: 'Kulkas',
       quantity: int.tryParse(_quantityController.text) ?? 1,
-      unit: _unitController.text.trim().isEmpty ? 'pcs' : _unitController.text.trim(),
+      unit: _unitController.text.trim().isEmpty
+          ? 'pcs'
+          : _unitController.text.trim(),
       status: 'available',
     );
 
@@ -99,7 +163,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
           children: [
             // Header
             Padding(
-              padding:  const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
                   InkWell(
@@ -132,7 +196,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                     style: TextStyle(
                       fontFamily: 'Gabarito',
                       fontSize: 22,
-                      fontWeight:  FontWeight.bold,
+                      fontWeight: FontWeight.bold,
                       color: AppColors.normal,
                     ),
                   ),
@@ -141,7 +205,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                     'Tambahkan bahan makanan baru ke etalase anda',
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors. grey[600],
+                      color: Colors.grey[600],
                     ),
                   ),
                 ],
@@ -150,7 +214,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
 
             const SizedBox(height: 20),
 
-            // Custom Tab Bar - DIPERBAIKI
+            // Tab Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
@@ -168,7 +232,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                     color: AppColors.normal,
                     borderRadius: BorderRadius.circular(22),
                   ),
-                  indicatorPadding: const EdgeInsets. all(4),
+                  indicatorPadding: const EdgeInsets.all(4),
                   labelColor: Colors.white,
                   unselectedLabelColor: AppColors.normal,
                   labelStyle: const TextStyle(
@@ -177,13 +241,13 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                     fontSize: 14,
                   ),
                   unselectedLabelStyle: const TextStyle(
-                    fontFamily:  'Gabarito',
+                    fontFamily: 'Gabarito',
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
                   ),
                   tabs: const [
-                    Tab(text:  'Input Manual'),
-                    Tab(text:  'Scan Barcode'),
+                    Tab(text: 'Input Manual'),
+                    Tab(text: 'Quick Add'),
                   ],
                 ),
               ),
@@ -197,7 +261,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                 controller: _tabController,
                 children: [
                   _buildManualInputTab(),
-                  _buildScanBarcodeTab(),
+                  _buildQuickAddTab(),
                 ],
               ),
             ),
@@ -207,6 +271,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
     );
   }
 
+  // INPUT MANUAL
   Widget _buildManualInputTab() {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -224,14 +289,14 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey. withOpacity(0.3)),
+                  border: Border.all(color: Colors.grey.withOpacity(0.3)),
                 ),
                 child: _selectedImage != null
                     ? Row(
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
-                            child: Image. file(
+                            child: Image.file(
                               _selectedImage!,
                               width: 50,
                               height: 50,
@@ -242,15 +307,13 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                           Expanded(
                             child: Text(
                               _selectedImageName ?? 'Image',
-                              style: const TextStyle(
-                                fontFamily: 'Gabarito',
-                              ),
+                              style: const TextStyle(fontFamily: 'Gabarito'),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
                           ),
                           IconButton(
-                            icon:  const Icon(Icons.close, color: Colors.grey),
+                            icon: const Icon(Icons.close, color: Colors.grey),
                             onPressed: () {
                               setState(() {
                                 _selectedImage = null;
@@ -262,15 +325,12 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                       )
                     : Row(
                         children: [
-                          Icon(
-                            Icons.camera_alt_outlined,
-                            color: Colors.grey[600],
-                            size: 28,
-                          ),
+                          Icon(Icons.camera_alt_outlined,
+                              color: Colors.grey[600], size: 28),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
                                   'Upload Gambar',
@@ -283,9 +343,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                                 Text(
                                   'Ambil/Upload Gambar Makanan',
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                  ),
+                                      fontSize: 12, color: Colors.grey[600]),
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                 ),
@@ -314,27 +372,73 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
 
             const SizedBox(height: 16),
 
-            // Berat/Jumlah
-            _buildLabel('Berat/Jumlah'),
-            TextFormField(
-              controller: _quantityController,
-              keyboardType: TextInputType.number,
-              decoration: _inputDecoration('0'),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Jumlah harus diisi';
-                }
-                return null;
+            // Kategori (Dropdown)
+            _buildLabel('Kategori'),
+            DropdownButtonFormField<String>(
+              value: _selectedCategory,
+              decoration: _inputDecoration('Pilih kategori'),
+              items: [
+                'Lainnya',
+                'Protein',
+                'Sayuran',
+                'Buah',
+                'Dairy',
+                'Makanan Kaleng',
+                'Minuman',
+                'Bumbu',
+                'Roti',
+                'Frozen',
+              ].map((category) {
+                return DropdownMenuItem(
+                  value: category,
+                  child: Text(category),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() => _selectedCategory = value!);
               },
             ),
 
             const SizedBox(height: 16),
 
-            // Satuan
-            _buildLabel('Satuan'),
-            TextFormField(
-              controller: _unitController,
-              decoration: _inputDecoration('Contoh: Gram'),
+            // Berat/Jumlah dan Satuan dalam satu Row
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLabel('Berat/Jumlah'),
+                      TextFormField(
+                        controller: _quantityController,
+                        keyboardType: TextInputType.number,
+                        decoration: _inputDecoration('0'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Wajib diisi';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildLabel('Satuan'),
+                      TextFormField(
+                        controller: _unitController,
+                        decoration: _inputDecoration('gram'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 16),
@@ -347,13 +451,42 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
               decoration: _inputDecoration('7'),
             ),
 
+            // Info Smart Default
+            if (_nameController.text.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.normal.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.lightbulb_outline,
+                          color: AppColors.normal, size: 20),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Tip: Gunakan tab "Quick Add" untuk mengisi otomatis berdasarkan jenis makanan! ',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.darker,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
             const SizedBox(height: 24),
 
             // Tombol Tambah
             SizedBox(
               width: double.infinity,
               height: 50,
-              child:  ElevatedButton(
+              child: ElevatedButton(
                 onPressed: _navigateToPreview,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.normal,
@@ -373,7 +506,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
               ),
             ),
 
-            const SizedBox(height:  24),
+            const SizedBox(height: 24),
 
             // Tips Penggunaan
             const Text(
@@ -384,80 +517,250 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
                 fontSize: 16,
               ),
             ),
-            const SizedBox(height:  8),
-            _buildTipItem('Pastikan nama makanan diisi dengan lengkap dan jelas'),
+            const SizedBox(height: 8),
+            _buildTipItem(
+                'Pastikan nama makanan diisi dengan lengkap dan jelas'),
             _buildTipItem('Isi berat atau jumlah sesuai dengan kemasan asli'),
             _buildTipItem('Perkirakan hari kadaluarsa dari tanggal pembelian'),
 
-            const SizedBox(height:  40),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildScanBarcodeTab() {
-    return SingleChildScrollView(
-      child:  Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            const SizedBox(height: 40),
-            Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(16),
+  // QUICK ADD
+  Widget _buildQuickAddTab() {
+    final categories = ['Semua', ...FoodTemplateData.categories];
+
+    return Column(
+      children: [
+        // Search Bar
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: TextField(
+            controller: _searchController,
+            decoration: InputDecoration(
+              hintText: 'Cari makanan...',
+              prefixIcon: Icon(Icons.search, color: AppColors.normal),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
               ),
-              child:  Icon(
-                Icons.qr_code_scanner,
-                size: 100,
-                color: Colors.grey[600],
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
               ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton. icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fitur Scan Barcode Coming Soon'),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.camera_alt, color: Colors.white),
-              label: const Text(
-                'Buka Kamera',
-                style: TextStyle(color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.normal,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.normal, width: 2),
               ),
             ),
-            const SizedBox(height: 40),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Tips Penggunaan',
-                  style:  TextStyle(
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Category Filter Chips
+        SizedBox(
+          height: 40,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final category = categories[index];
+              final isSelected = _selectedQuickCategory == category;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  label: Text(category),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    setState(() {
+                      _selectedQuickCategory = category;
+                      _filterTemplates();
+                    });
+                  },
+                  backgroundColor: Colors.white,
+                  selectedColor: AppColors.normal,
+                  labelStyle: TextStyle(
+                    color: isSelected ? Colors.white : AppColors.darker,
                     fontFamily: 'Gabarito',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color: isSelected
+                          ? AppColors.normal
+                          : Colors.grey.withOpacity(0.3),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                _buildTipItem('Pastikan barcode terlihat jelas'),
-                _buildTipItem('Arahkan kamera tepat ke barcode'),
-                _buildTipItem('Pastikan pencahayaan cukup'),
+              );
+            },
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Info Banner
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.normal.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.auto_awesome, color: AppColors.normal, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Quick Add dengan Smart Defaults',
+                        style: TextStyle(
+                          fontFamily: 'Gabarito',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        'Pilih makanan untuk auto-fill estimasi kadaluarsa',
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 40),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Template Grid
+        Expanded(
+          child: _filteredTemplates.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.search_off, size: 60, color: Colors.grey[300]),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Tidak ada makanan ditemukan',
+                        style: TextStyle(color: Colors.grey[500]),
+                      ),
+                    ],
+                  ),
+                )
+              : GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 0.85,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                  ),
+                  itemCount: _filteredTemplates.length,
+                  itemBuilder: (context, index) {
+                    final template = _filteredTemplates[index];
+                    return _buildTemplateCard(template);
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTemplateCard(FoodTemplate template) {
+    return InkWell(
+      onTap: () => _selectTemplate(template),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Icon
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                color: AppColors.normal.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Icon(
+                template.icon,
+                color: AppColors.normal,
+                size: 28,
+              ),
+            ),
+            const SizedBox(height: 8),
+            // Name
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
+                template.name,
+                style: const TextStyle(
+                  fontFamily: 'Gabarito',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 2),
+            // Expiry days badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: _getExpiryColor(template.defaultExpiryDays)
+                    .withOpacity(0.2),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${template.defaultExpiryDays}d',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: _getExpiryColor(template.defaultExpiryDays),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Color _getExpiryColor(int days) {
+    if (days <= 3) return Colors.red;
+    if (days <= 7) return Colors.orange;
+    if (days <= 30) return AppColors.normal;
+    return Colors.blue;
   }
 
   Widget _buildLabel(String text) {
@@ -479,22 +782,22 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
     return InputDecoration(
       hintText: hint,
       filled: true,
-      fillColor:  Colors.white,
+      fillColor: Colors.white,
       border: OutlineInputBorder(
-        borderRadius:  BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
       ),
-      enabledBorder:  OutlineInputBorder(
+      enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide:  BorderSide(color: Colors. grey.withOpacity(0.3)),
+        borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius:  BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide(color: AppColors.normal, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors. red),
+        borderSide: const BorderSide(color: Colors.red),
       ),
     );
   }
@@ -509,10 +812,7 @@ class _AddFoodPageState extends State<AddFoodPage> with SingleTickerProviderStat
           Expanded(
             child: Text(
               text,
-              style:  TextStyle(
-                fontSize: 13,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 13, color: Colors.grey[700]),
             ),
           ),
         ],

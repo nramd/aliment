@@ -10,6 +10,7 @@ import 'package:aliment/features/screens/etalase_page.dart';
 import 'package:aliment/features/screens/add_food_page.dart';
 import 'package:aliment/features/screens/preview_food_page.dart';
 import 'package:aliment/features/screens/food_detail_page.dart';
+import 'package:aliment/features/screens/edit_food_page.dart';
 import 'package:aliment/features/models/food_item_model.dart';
 
 final GoRouter router = GoRouter(
@@ -19,9 +20,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/splash',
       pageBuilder: (context, state) {
-        return const NoTransitionPage(
-          child: SplashScreen(),
-        );
+        return const NoTransitionPage(child: SplashScreen());
       },
     ),
 
@@ -70,7 +69,7 @@ final GoRouter router = GoRouter(
       },
     ),
 
-    // Home (Main Screen with Bottom Navigation)
+    // Home
     GoRoute(
       path: '/home',
       pageBuilder: (context, state) {
@@ -85,17 +84,16 @@ final GoRouter router = GoRouter(
       },
     ),
 
-    // Etalase Page (Full List)
+    // Etalase Page
     GoRoute(
       path: '/etalase',
       pageBuilder: (context, state) {
         return CustomTransitionPage(
-          key: state. pageKey,
+          key: state.pageKey,
           child: const EtalasePage(),
-          transitionsBuilder:  (context, animation, secondaryAnimation, child) {
-            // Slide from right
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
-              position: Tween<Offset>(
+              position:  Tween<Offset>(
                 begin: const Offset(1.0, 0.0),
                 end: Offset.zero,
               ).animate(CurvedAnimation(
@@ -137,13 +135,38 @@ final GoRouter router = GoRouter(
     // Preview Food Page
     GoRoute(
       path: '/previewFood',
-      pageBuilder:  (context, state) {
+      pageBuilder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
         final food = extra['food'] as FoodItemModel;
         final imageFile = extra['imageFile'] as File?;
         return CustomTransitionPage(
           key: state.pageKey,
           child: PreviewFoodPage(food: food, imageFile: imageFile),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position:  Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              )),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
+      },
+    ),
+
+    // Food Detail Page
+    GoRoute(
+      path: '/foodDetail/:id',
+      pageBuilder: (context, state) {
+        final foodId = state.pathParameters['id']!;
+        return CustomTransitionPage(
+          key: state. pageKey,
+          child: FoodDetailPage(foodId: foodId),
           transitionsBuilder:  (context, animation, secondaryAnimation, child) {
             return SlideTransition(
               position:  Tween<Offset>(
@@ -161,39 +184,14 @@ final GoRouter router = GoRouter(
       },
     ),
 
-    // Food Detail Page
-    GoRoute(
-      path: '/foodDetail/:id',
-      pageBuilder: (context, state) {
-        final foodId = state.pathParameters['id']!;
-        return CustomTransitionPage(
-          key: state.pageKey,
-          child: FoodDetailPage(foodId:  foodId),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1.0, 0.0),
-                end: Offset. zero,
-              ).animate(CurvedAnimation(
-                parent:  animation,
-                curve: Curves.easeOutCubic,
-              )),
-              child:  child,
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 300),
-        );
-      },
-    ),
-
     // Edit Food Page
     GoRoute(
       path: '/editFood/:id',
       pageBuilder: (context, state) {
         final foodId = state.pathParameters['id']!;
         return CustomTransitionPage(
-          key: state.pageKey,
-          child: FoodDetailPage(foodId: foodId),
+          key: state. pageKey,
+          child: EditFoodPage(foodId: foodId),
           transitionsBuilder:  (context, animation, secondaryAnimation, child) {
             return SlideTransition(
               position:  Tween<Offset>(
@@ -213,12 +211,11 @@ final GoRouter router = GoRouter(
   ],
 );
 
-/// Page tanpa transisi
 class NoTransitionPage<T> extends CustomTransitionPage<T> {
   const NoTransitionPage({required super.child})
       : super(
           transitionsBuilder: _transitionsBuilder,
-          transitionDuration: Duration.zero,
+          transitionDuration:  Duration.zero,
         );
 
   static Widget _transitionsBuilder(

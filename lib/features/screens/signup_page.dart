@@ -91,7 +91,6 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenHeight = screenSize.height;
-    final double screenWidth = screenSize.width;
 
     return Scaffold(
       body: Container(
