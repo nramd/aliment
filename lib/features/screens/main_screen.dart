@@ -15,11 +15,17 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomePage(),
-    SharePage(),
-    EducationPage(),
-    ProfilePage(),
+  late final List<Widget> _pages = [
+    HomePage(
+      onSwitchToTab: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+    ),
+    const SharePage(),
+    const EducationPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -60,8 +66,6 @@ class _MainScreenState extends State<MainScreen> {
           iconSize: 28,
           selectedFontSize: 14,
           unselectedFontSize: 14,
-
-          // --- BAGIAN ITEMS DIMODIFIKASI DI SINI ---
           items: [
             _buildNavItem(
               icon: Icons.home_outlined,

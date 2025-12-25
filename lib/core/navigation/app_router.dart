@@ -14,6 +14,8 @@ import 'package:aliment/features/screens/edit_food_page.dart';
 import 'package:aliment/features/screens/notification_settings_page.dart';
 import 'package:aliment/features/models/food_item_model.dart';
 import 'package:aliment/features/screens/notification_list_page.dart';
+import 'package:aliment/features/screens/category_page.dart';
+import 'package:aliment/features/screens/article_detail_page.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/splash',
@@ -240,6 +242,55 @@ final GoRouter router = GoRouter(
         return CustomTransitionPage(
           key: state.pageKey,
           child: const NotificationListPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              )),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
+      },
+    ),
+    // Category Page
+    GoRoute(
+      path: '/category/:name',
+      pageBuilder: (context, state) {
+        final categoryName = state.pathParameters['name']!;
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: CategoryPage(categoryName: categoryName),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1.0, 0.0),
+                end: Offset.zero,
+              ).animate(CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              )),
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 300),
+        );
+      },
+    ),
+
+// Article Detail Page
+    GoRoute(
+      path: '/article/:id',
+      pageBuilder: (context, state) {
+        final articleId = state.pathParameters['id']!;
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: ArticleDetailPage(articleId: articleId),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
               position: Tween<Offset>(

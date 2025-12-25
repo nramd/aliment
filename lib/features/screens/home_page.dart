@@ -7,7 +7,9 @@ import 'package:aliment/features/models/food_item_model.dart';
 import 'package:aliment/features/services/notification_service.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({super.key, this.onSwitchToTab});
+
+  final Function(int)? onSwitchToTab;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -124,16 +126,16 @@ class _HomePageState extends State<HomePage>
                 'Halo, $_displayName',
                 style: const TextStyle(
                   fontFamily: 'Gabarito',
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.darker,
+                  color: AppColors.normal,
                 ),
               ),
               const Text(
                 'Kelola dan Bagikan Makananmu Hari ini! ',
                 style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
+                  fontSize: 10,
+                  color: AppColors.darker,
                 ),
               ),
             ],
@@ -142,7 +144,6 @@ class _HomePageState extends State<HomePage>
         Row(
           children: [
             _buildIconButton(Icons.shopping_cart_outlined, () {}),
-            _buildIconButton(Icons.chat_bubble_outline, () {}),
             _buildNotificationButton(),
           ],
         ),
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage>
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.all(6.0),
-        child: Icon(icon, color: AppColors.darker, size: 16),
+        child: Icon(icon, color: AppColors.darker, size: 24),
       ),
     );
   }
@@ -184,7 +185,7 @@ class _HomePageState extends State<HomePage>
                       ? Icons.notifications_active
                       : Icons.notifications_outlined,
                   color: totalAlerts > 0 ? Colors.orange : AppColors.darker,
-                  size: 24,
+                  size: 28,
                 ),
                 if (totalAlerts > 0)
                   Positioned(
@@ -197,8 +198,8 @@ class _HomePageState extends State<HomePage>
                         shape: BoxShape.circle,
                       ),
                       constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
+                        minWidth: 8,
+                        minHeight: 8,
                       ),
                       child: Text(
                         totalAlerts > 9 ? '9+' : '$totalAlerts',
@@ -417,7 +418,7 @@ class _HomePageState extends State<HomePage>
     return InkWell(
       onTap: () => context.push('/addFood'),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.light,
           borderRadius: BorderRadius.circular(12),
@@ -659,7 +660,7 @@ class _HomePageState extends State<HomePage>
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {
-                    // context.push('/edukasi');
+                    widget.onSwitchToTab?.call(2);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.light,
