@@ -15,7 +15,7 @@ class ArticleModel {
   ArticleModel({
     required this.id,
     required this.title,
-    required this. category,
+    required this.category,
     required this.author,
     required this.authorAvatar,
     required String publishedDateStr, // Terima sebagai String
@@ -29,15 +29,16 @@ class ArticleModel {
 // Database artikel statis
 class ArticleData {
   static final List<ArticleModel> articles = [
-    // NUTRISI 
+    // NUTRISI
     ArticleModel(
       id: 'nutrisi_1',
       title: 'Panduan Makan Seimbang dalam 1 Piring',
       category: 'Nutrisi',
-      author:  'Dina Kusuma',
-      authorAvatar:  'DK',
+      author: 'Dina Kusuma',
+      authorAvatar: 'DK',
       publishedDateStr: '2025-01-24',
-      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
       views: 920,
       likes: 410,
       content: '''
@@ -81,7 +82,8 @@ Mulailah dari perubahan kecil dan konsisten. Kesehatan adalah investasi jangka p
       author: 'Sari Oktavia',
       authorAvatar: 'SO',
       publishedDateStr: '2025-02-01',
-      imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
       views: 502,
       likes: 213,
       content: '''
@@ -126,13 +128,14 @@ Dengan pola hidup sehat dan asupan nutrisi yang tepat, sistem imun Anda akan bek
 ''',
     ),
     ArticleModel(
-      id:  'nutrisi_3',
+      id: 'nutrisi_3',
       title: 'Fakta Tentang Lemak Sehat:  Alpukat, Ikan, dan Kacang',
       category: 'Nutrisi',
       author: 'Naufal Febrianto',
       authorAvatar: 'NF',
       publishedDateStr: '2025-05-05',
-      imageUrl: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=800',
       views: 1500,
       likes: 723,
       content: '''
@@ -171,7 +174,7 @@ Lemak sehat adalah bagian penting dari diet seimbang. Dengan memilih sumber lema
 ''',
     ),
 
-    // PENYIMPANAN 
+    // PENYIMPANAN
     ArticleModel(
       id: 'penyimpanan_1',
       title: 'Cara Menyimpan Sayuran Agar Tahan Lama',
@@ -179,7 +182,8 @@ Lemak sehat adalah bagian penting dari diet seimbang. Dengan memilih sumber lema
       author: 'Rina Wati',
       authorAvatar: 'RW',
       publishedDateStr: '2025-01-15',
-      imageUrl:  'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800',
       views: 1250,
       likes: 567,
       content: '''
@@ -219,13 +223,14 @@ Dengan penyimpanan yang tepat, sayuran Anda bisa tahan lebih lama!
 ''',
     ),
     ArticleModel(
-      id:  'penyimpanan_2',
+      id: 'penyimpanan_2',
       title: 'Panduan Menyimpan Daging dan Protein',
       category: 'Penyimpanan',
       author: 'Ahmad Hidayat',
       authorAvatar: 'AH',
       publishedDateStr: '2025-02-10',
-      imageUrl: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=800',
       views: 890,
       likes: 412,
       content: '''
@@ -265,9 +270,10 @@ Daging dan protein adalah bahan makanan yang mudah rusak. Penyimpanan yang benar
       title: 'Teknik Penyimpanan Buah yang Benar',
       category: 'Penyimpanan',
       author: 'Maya Sari',
-      authorAvatar:  'MS',
+      authorAvatar: 'MS',
       publishedDateStr: '2025-03-05',
-      imageUrl: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=800',
       views: 678,
       likes: 289,
       content: '''
@@ -305,15 +311,16 @@ Setiap jenis buah memiliki cara penyimpanan yang berbeda.
 ''',
     ),
 
-    // LIMBAH 
+    // LIMBAH
     ArticleModel(
       id: 'limbah_1',
-      title:  'Gunakan Ulang Kulit Buah:  3 Ide Kreatif & Bergizi',
+      title: 'Gunakan Ulang Kulit Buah:  3 Ide Kreatif & Bergizi',
       category: 'Limbah',
       author: 'Lina Permata',
       authorAvatar: 'LP',
       publishedDateStr: '2025-01-20',
-      imageUrl: 'https://images.unsplash.com/photo-1457296898342-cdd24f29b5c0?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1457296898342-cdd24f29b5c0?w=800',
       views: 1100,
       likes: 534,
       content: '''
@@ -357,7 +364,8 @@ Kulit buah sering dibuang, padahal banyak yang masih bisa dimanfaatkan.
       author: 'Budi Santoso',
       authorAvatar: 'BS',
       publishedDateStr: '2025-02-15',
-      imageUrl: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800',
       views: 756,
       likes: 312,
       content: '''
@@ -399,10 +407,11 @@ Kompos adalah cara terbaik untuk mengolah sisa makanan menjadi pupuk organik.
       id: 'limbah_3',
       title: 'Zero Waste Kitchen: Tips Mengurangi Sampah Dapur',
       category: 'Limbah',
-      author:  'Dewi Lestari',
+      author: 'Dewi Lestari',
       authorAvatar: 'DL',
       publishedDateStr: '2025-03-10',
-      imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1542838132-92c53300491e?w=800',
       views: 920,
       likes: 445,
       content: '''
@@ -429,15 +438,16 @@ Perubahan kecil dari setiap rumah tangga bisa membuat dampak besar!
 ''',
     ),
 
-    // RESEP 
+    // RESEP
     ArticleModel(
       id: 'resep_1',
-      title:  'Resep Smoothie Bowl Sehat untuk Sarapan',
+      title: 'Resep Smoothie Bowl Sehat untuk Sarapan',
       category: 'Resep',
       author: 'Chef Andi',
       authorAvatar: 'CA',
       publishedDateStr: '2025-01-18',
-      imageUrl: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=800',
       views: 1350,
       likes: 678,
       content: '''
@@ -477,8 +487,9 @@ Smoothie bowl adalah pilihan sarapan sehat yang lezat dan instagramable.
       category: 'Resep',
       author: 'Bu Rina',
       authorAvatar: 'BR',
-      publishedDateStr:  '2025-02-08',
-      imageUrl: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800',
+      publishedDateStr: '2025-02-08',
+      imageUrl:
+          'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800',
       views: 1890,
       likes: 892,
       content: '''
@@ -518,11 +529,12 @@ Nasi sisa sering dibuang, padahal bisa diolah menjadi hidangan lezat.
     ArticleModel(
       id: 'resep_3',
       title: 'Meal Prep: Siapkan Makan Seminggu dalam 2 Jam',
-      category:  'Resep',
+      category: 'Resep',
       author: 'Fitri Handayani',
       authorAvatar: 'FH',
       publishedDateStr: '2025-03-01',
-      imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800',
+      imageUrl:
+          'https://images.unsplash.com/photo-1544025162-d76694265947?w=800',
       views: 2100,
       likes: 956,
       content: '''
@@ -571,7 +583,7 @@ Dengan meal prep, Anda menghemat waktu, uang, dan makan lebih sehat!
   }
 
   // Get artikel by ID
-  static ArticleModel?  getById(String id) {
+  static ArticleModel? getById(String id) {
     try {
       return articles.firstWhere((a) => a.id == id);
     } catch (e) {
@@ -581,9 +593,17 @@ Dengan meal prep, Anda menghemat waktu, uang, dan makan lebih sehat!
 
   // Categories
   static const List<Map<String, dynamic>> categories = [
-    {'name': 'Nutrisi', 'icon': '❤️', 'color': 0xFFE57373},
-    {'name': 'Penyimpanan', 'icon':  '🗄️', 'color': 0xFF81C784},
-    {'name':  'Limbah', 'icon': '♻️', 'color': 0xFF64B5F6},
-    {'name': 'Resep', 'icon': '🍳', 'color': 0xFFFFB74D},
+    {
+      'name': 'Nutrisi',
+      'icon': 'assets/icons/nutrisi.png',
+      'color': 0xFFE93F3F
+    },
+    {
+      'name': 'Penyimpanan',
+      'icon': 'assets/icons/penyimpanan.png',
+      'color': 0xFF6B8E4E
+    },
+    {'name': 'Limbah', 'icon': 'assets/icons/limbah.png', 'color': 0xFF4CA8E0},
+    {'name': 'Resep', 'icon': 'assets/icons/resep.png', 'color': 0xFFF4A261},
   ];
 }

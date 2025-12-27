@@ -51,3 +51,7 @@ flutter:
     - assets/icons/back_button.png
     - assets/icons/Google_logo.png
     - assets/icons/user_profile.png
+    - assets/icons/limbah.png
+    - assets/icons/nutrisi.png
+    - assets/icons/penyimpanan.png
+    - assets/icons/resep.png

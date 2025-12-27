@@ -6,7 +6,7 @@ import 'package:aliment/features/services/notification_service.dart';
 import 'package:aliment/features/models/user_model.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super. key});
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -15,7 +15,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final AuthService _authService = AuthService();
   final NotificationService _notificationService = NotificationService();
-  
+
   String _displayName = 'User';
   String _email = '';
   Map<String, dynamic> _expirySummary = {};
@@ -33,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final userData = await _authService.getUserData(user.uid);
       if (userData != null && mounted) {
         setState(() {
-          _displayName = userData. displayName;
+          _displayName = userData.displayName;
           _email = userData.email;
         });
       } else if (mounted) {
@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _loadExpirySummary() async {
     final user = _authService.currentUser;
     if (user != null) {
-      final summary = await _notificationService.getExpirySummary(user. uid);
+      final summary = await _notificationService.getExpirySummary(user.uid);
       if (mounted) {
         setState(() {
           _expirySummary = summary;
@@ -69,7 +69,7 @@ class _ProfilePageState extends State<ProfilePage> {
         content: const Text('Apakah Anda yakin ingin keluar? '),
         actions: [
           TextButton(
-            onPressed:  () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(context),
             child: Text(
               'Batal',
               style: TextStyle(color: Colors.grey[600]),
@@ -88,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: const Text(
               'Keluar',
-              style: TextStyle(color:  Colors.white),
+              style: TextStyle(color: Colors.white),
             ),
           ),
         ],
@@ -119,14 +119,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
 
-              const SizedBox(height:  24),
+              const SizedBox(height: 24),
 
               // Profile Card
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors. white,
-                  borderRadius:  BorderRadius.circular(16),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.05),
@@ -135,16 +135,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
-                child:  Row(
+                child: Row(
                   children: [
                     CircleAvatar(
                       radius: 35,
                       backgroundColor: AppColors.normal,
                       child: Text(
-                        _displayName.isNotEmpty 
-                            ? _displayName[0].toUpperCase() 
+                        _displayName.isNotEmpty
+                            ? _displayName[0].toUpperCase()
                             : 'U',
-                        style:  const TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 28,
@@ -154,7 +154,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment:  CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             _displayName,
@@ -186,7 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 const Text(
                   'Ringkasan Makanan',
                   style: TextStyle(
-                    fontFamily:  'Gabarito',
+                    fontFamily: 'Gabarito',
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
@@ -195,7 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color:  Colors.white,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -244,7 +244,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 icon: Icons.person_outline,
                 title: 'Edit Profil',
                 subtitle: 'Ubah nama dan foto profil',
-                onTap:  () {
+                onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Fitur coming soon')),
                   );
@@ -257,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 subtitle: 'FAQ dan panduan penggunaan',
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content:  Text('Fitur coming soon')),
+                    const SnackBar(content: Text('Fitur coming soon')),
                   );
                 },
               ),
@@ -268,7 +268,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 subtitle: 'Versi 1.0.0',
                 onTap: () {
                   showAboutDialog(
-                    context:  context,
+                    context: context,
                     applicationName: 'Aliment',
                     applicationVersion: '1.0.0',
                     applicationLegalese: '© 2025 Aliment',
@@ -295,16 +295,16 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(color: Colors.red),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors. red),
+                    side: const BorderSide(color: Colors.red),
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape:  RoundedRectangleBorder(
-                      borderRadius:  BorderRadius.circular(12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height:  40),
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -353,15 +353,15 @@ class _ProfilePageState extends State<ProfilePage> {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors. normal. withOpacity(0.1),
-            borderRadius: BorderRadius. circular(8),
+            color: AppColors.normal.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: AppColors.normal),
         ),
         title: Text(
           title,
           style: const TextStyle(
-            fontFamily:  'Gabarito',
+            fontFamily: 'Gabarito',
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -369,15 +369,15 @@ class _ProfilePageState extends State<ProfilePage> {
           subtitle,
           style: TextStyle(
             fontSize: 12,
-            color:  Colors.grey[600],
+            color: Colors.grey[600],
           ),
         ),
         trailing: Icon(
           Icons.chevron_right,
-          color:  Colors.grey[400],
+          color: Colors.grey[400],
         ),
         shape: RoundedRectangleBorder(
-          borderRadius:  BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );

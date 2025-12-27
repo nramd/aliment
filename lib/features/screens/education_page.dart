@@ -319,9 +319,15 @@ class _EducationPageState extends State<EducationPage> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-              child: Text(
+              child: Image.asset(
                 icon,
-                style: const TextStyle(fontSize: 28),
+                width: 32,
+                height: 32,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  // Fallback jika gambar gagal dimuat (misal lupa taruh file)
+                  return const Icon(Icons.broken_image, color: Colors.white);
+                },
               ),
             ),
           ),
