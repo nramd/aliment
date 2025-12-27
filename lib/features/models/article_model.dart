@@ -1,5 +1,3 @@
-import 'package:intl/intl.dart';
-
 class ArticleModel {
   final String id;
   final String title;

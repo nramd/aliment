@@ -4,7 +4,6 @@ import 'package:aliment/features/screens/home_page.dart';
 import 'package:aliment/features/screens/share_page.dart';
 import 'package:aliment/features/screens/education_page.dart';
 import 'package:aliment/features/screens/profile_page.dart';
-import 'package:aliment/features/screens/share_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
