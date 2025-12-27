@@ -4,6 +4,7 @@ import 'package:aliment/features/screens/home_page.dart';
 import 'package:aliment/features/screens/share_page.dart';
 import 'package:aliment/features/screens/education_page.dart';
 import 'package:aliment/features/screens/profile_page.dart';
+import 'package:aliment/features/screens/share_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -74,7 +75,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
             _buildNavItem(
               icon: Icons.favorite_outline,
-              activeIcon: Icons.favorite,
+              activeIcon: Icons.volunteer_activism,
               label: 'Berbagi',
             ),
             _buildNavItem(

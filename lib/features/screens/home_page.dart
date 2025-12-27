@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildHeader(),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
                 _buildEtalaseSection(user.uid),
                 const SizedBox(height: 24),
                 _buildJelajahiSection(),
@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage>
                 'Halo, $_displayName',
                 style: const TextStyle(
                   fontFamily: 'Gabarito',
-                  fontSize: 18,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: AppColors.normal,
                 ),
@@ -143,7 +143,9 @@ class _HomePageState extends State<HomePage>
         ),
         Row(
           children: [
-            _buildIconButton(Icons.shopping_cart_outlined, () {}),
+            _buildIconButton(Icons.history, () {
+              context.push('/shareHistory');
+            }),
             _buildNotificationButton(),
           ],
         ),
@@ -156,7 +158,7 @@ class _HomePageState extends State<HomePage>
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.all(6.0),
+        padding: const EdgeInsets.all(8.0),
         child: Icon(icon, color: AppColors.darker, size: 24),
       ),
     );

@@ -10,14 +10,16 @@ class FoodItemModel {
   final String storageLocation;
   final int quantity;
   final String unit;
-  final String status; 
-  final String?  imageUrl;
+  final String status;
+  final String? imageUrl;
+  final bool isShared;
+  final String? sharedFoodId;
 
   FoodItemModel({
     required this.id,
     required this.userId,
     required this.name,
-    required this. category,
+    required this.category,
     required this.expiryDate,
     required this.addedDate,
     required this.storageLocation,
@@ -25,37 +27,43 @@ class FoodItemModel {
     required this.unit,
     required this.status,
     this.imageUrl,
+    this.isShared = false,
+    this.sharedFoodId,
   });
 
   factory FoodItemModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>;
     return FoodItemModel(
       id: doc.id,
       userId: data['userId'] ?? '',
       name: data['name'] ?? '',
-      category: data['category'] ??  'Lainnya',
+      category: data['category'] ?? 'Lainnya',
       expiryDate: (data['expiryDate'] as Timestamp).toDate(),
       addedDate: (data['addedDate'] as Timestamp).toDate(),
       storageLocation: data['storageLocation'] ?? '',
       quantity: data['quantity'] ?? 1,
       unit: data['unit'] ?? 'pcs',
-      status: data['status'] ??  'available',
+      status: data['status'] ?? 'available',
       imageUrl: data['imageUrl'],
+      isShared: data['isShared'] ?? false,
+      sharedFoodId: data['sharedFoodId'],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
-      'name':  name,
+      'name': name,
       'category': category,
-      'expiryDate':  Timestamp.fromDate(expiryDate),
+      'expiryDate': Timestamp.fromDate(expiryDate),
       'addedDate': Timestamp.fromDate(addedDate),
       'storageLocation': storageLocation,
       'quantity': quantity,
       'unit': unit,
       'status': status,
       'imageUrl': imageUrl,
+      'isShared': isShared,
+      'sharedFoodId': sharedFoodId,
     };
   }
 
@@ -65,29 +73,38 @@ class FoodItemModel {
     String? name,
     String? category,
     DateTime? expiryDate,
-    DateTime?  addedDate,
-    String?  storageLocation,
-    int?  quantity,
+    DateTime? addedDate,
+    String? storageLocation,
+    int? quantity,
     String? unit,
     String? status,
     String? imageUrl,
+    bool? isShared,
+    String? sharedFoodId,
   }) {
     return FoodItemModel(
       id: id ?? this.id,
       userId: userId ?? this.userId,
       name: name ?? this.name,
       category: category ?? this.category,
-      expiryDate:  expiryDate ?? this.expiryDate,
-      addedDate: addedDate ?? this. addedDate,
-      storageLocation: storageLocation ?? this. storageLocation,
-      quantity:  quantity ?? this.quantity,
+      expiryDate: expiryDate ?? this.expiryDate,
+      addedDate: addedDate ?? this.addedDate,
+      storageLocation: storageLocation ?? this.storageLocation,
+      quantity: quantity ?? this.quantity,
       unit: unit ?? this.unit,
-      status: status ?? this. status,
+      status: status ?? this.status,
       imageUrl: imageUrl ?? this.imageUrl,
+      isShared: isShared ?? this.isShared,
+      sharedFoodId: sharedFoodId ?? this.sharedFoodId,
     );
   }
 
-  int get daysUntilExpiry => expiryDate.difference(DateTime. now()).inDays;
+  int get daysUntilExpiry {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final expiry = DateTime(expiryDate.year, expiryDate.month, expiryDate.day);
+    return expiry.difference(today).inDays;
+  }
 
   // Getter untuk status kadaluarsa
   String get expiryStatus {
